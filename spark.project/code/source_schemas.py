@@ -8,7 +8,7 @@ dwell_data_schema = StructType([
     StructField("Count", IntegerType())
     ])
 
-dwell_area_schema = StructType([
+dwell_dim_schema = StructType([
     StructField("Code", IntegerType()),
     StructField("Description", StringType()),
     StructField("SortOrder", IntegerType())
