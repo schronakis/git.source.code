@@ -3,14 +3,14 @@ from parameters import connection_info_files, connection_info_tables
 
 class SourceElements(ABC):
     
-    def apply(self, flag, schema):
-        if flag == 'files':
-            return self.get_flat_files(connection_info_files.get('csv_format'),
+    def apply(self, flag, element_name, schema):
+        if flag == 'file':
+            return self.get_flat_files(element_name,
+                                       connection_info_files.get('csv_format'),
                                        schema,
-                                       connection_info_files.get('source_files_path'),
-                                       'Data8278.csv')
-        elif flag == 'tables':
-            return self.get_db_tables('stg.DimenLookupDwellStatus8278',
+                                       connection_info_files.get('source_files_path'))
+        elif flag == 'table':
+            return self.get_db_tables(element_name,
                                       schema,
                                       connection_info_tables.get('mssql_server'),
                                       connection_info_tables.get('mssql_port'),

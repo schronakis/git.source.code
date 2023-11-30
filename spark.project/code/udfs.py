@@ -5,15 +5,15 @@ from pyspark.sql.types import StringType, IntegerType, DoubleType, LongType
 from pyspark.sql.functions import pandas_udf, PandasUDFType
 
 sc = sparkSession('generate_pdf','2g','2g','4')
-sc_new = sc.generate_spark_session()
+spark_session = sc.generate_spark_session()
 
-partition_size = sc_new.conf.get("spark.sql.files.maxPartitionBytes").replace("b","")
+partition_size = spark_session.conf.get("spark.sql.files.maxPartitionBytes").replace("b","")
 
 print(f"Partition Size: {partition_size} in bytes and {int(partition_size) / 1024 / 1024} in MB")
-print(f"Parallelism : {sc_new.sparkContext.defaultParallelism}")
+print(f"Parallelism : {spark_session.sparkContext.defaultParallelism}")
 
 # Enable Arrow-based columnar data transfers
-sc_new.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
 # Define UDFs
 def convertCase(str):
@@ -41,7 +41,7 @@ data = [("1", "john jones"),
         ("2", "tracey smith"),
         ("3", "amy sanders")]
 
-# df = sc_new.createDataFrame(data=data,schema=columns)
+# df = spark_session.createDataFrame(data=data,schema=columns)
 
 # df.withColumn("Cureated Name", upperCaseUDF(F.col("Name"))) \
 #   .show(truncate=False)
@@ -52,6 +52,6 @@ data = [("1", "john jones"),
 
 x = [1, 2, 3]
 
-df = sc_new.createDataFrame(x, IntegerType())
+df = spark_session.createDataFrame(x, IntegerType())
 
 df.select(squared(F.col('value'))).explain()

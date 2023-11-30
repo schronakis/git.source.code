@@ -11,12 +11,12 @@ default_args = {
 test_dag = DAG(
     'test_bash_script_dag',
     default_args=default_args,
-    schedule_inteval=None
+    schedule_interval=None
 )
 # Define the BashOperator task
 bash_task = BashOperator(
     task_id='bash_task_execute_script',
-    bash_command='/home/schronakis/spark_project/run_pyspark_code.sh ',
+    bash_command='/home/schronakis/git.source.code/spark.project/code/run_pyspark_code.sh ',
     dag=test_dag
 )
 # Set task dependencies

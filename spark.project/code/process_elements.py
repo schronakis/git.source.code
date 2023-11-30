@@ -1,18 +1,36 @@
-import pyspark.sql.functions as F
+from get_source_elements import GetSourceElements
+from pyspark.sql import functions as F
+from spark_session import sparkSession
 from source_schemas import dwell_data_schema, dwell_dim_schema
-from get_sources import GetSourceElements
 
-get_source_elements = GetSourceElements()      
+sc = sparkSession('R&D Spark','2g','2g','4')
+spark_session = sc.generate_spark_session()
 
-source_files_df = get_source_elements.get_source_files('csv',dwell_data_schema,'/home/schronakis/git.source.code/spark.project/source_files/','Data8278.csv')
-source_table_df = get_source_elements.get_db_tables('stg.DimenLookupDwellStatus8278',dwell_dim_schema,'192.168.1.10','1433','MyWork','schronakis','#3Chr0nakis')
+get_elements = GetSourceElements(spark_session)
 
-print(source_files_df.columns)
-print(source_table_df.columns)
+data_df = get_elements.apply('file', 'Data8278.csv', dwell_data_schema)
+rectype_df = get_elements.apply('file', 'DimenLookupDwellRecType8278.csv', dwell_dim_schema)
+status_df = get_elements.apply('table', 'stg.DimenLookupDwellStatus8278', dwell_dim_schema)
 
-rows = source_files_df.count()
-print(f"DataFrame distinct row count: {rows}")
 
-source_files_df.show()
-source_table_df.show()
+data_df.alias('data_df') \
+    .join(rectype_df.alias('rectype_df'), F.col('DwellRecType') == F.col('rectype_df.Code'), 'inner') \
+    .join(status_df.alias('status_df'), F.col('DwellStatus') == F.col('status_df.Code'), 'inner') \
+    .select(('data_df.*'),
+            F.col('rectype_df.Description').alias('RecTypeDescription'),
+            F.col('status_df.Description').alias('StatusDescription')) \
+    .filter((F.col('DwellRecType') == 1) & 
+            (F.col('DwellStatus') == 2) &
+            (F.col('Area') == 77) &
+            (F.col('Count') == 159222)) \
+    .distinct() \
+    .show()
 
+
+data_df.alias('data_df') \
+    .filter((F.col('DwellRecType') == 1) & 
+            (F.col('DwellStatus') == 2) &
+            (F.col('Area') == 77) &
+            (F.col('Count') == 159222)) \
+    .distinct() \
+    .show()

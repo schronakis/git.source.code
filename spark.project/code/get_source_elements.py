@@ -1,16 +1,15 @@
 from abs_source_elements import SourceElements
-from spark_session import sparkSession
-from source_schemas import dwell_data_schema, dwell_dim_schema
 
 class GetSourceElements(SourceElements):
-    sc = sparkSession('RnD Spark','2g','2g','4')
-    spark_session = sc.generate_spark_session()
 
-    def get_flat_files(self, format, schema, path, filename):
+    def __init__(self, spark_session):
+        self.spark_session = spark_session
+
+    def get_flat_files(self, filename, format, schema, path):
         source_files_df = self.spark_session.read.format(format) \
-        .option("header", True) \
-        .schema(schema) \
-        .load(f'{path}{filename}') 
+            .option("header", True) \
+            .schema(schema) \
+            .load(f'{path}{filename}') 
 
         return source_files_df
 
@@ -26,8 +25,3 @@ class GetSourceElements(SourceElements):
             .load()
         
         return source_tables_df
-
-get_elements = GetSourceElements()
-# df = get_elements.apply('files',dwell_data_schema)
-df = get_elements.apply('tables',dwell_dim_schema)
-df.show()
