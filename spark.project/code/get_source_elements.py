@@ -5,7 +5,7 @@ class GetSourceElements(SourceElements):
     def __init__(self, spark_session):
         self.spark_session = spark_session
 
-    def get_flat_files(self, filename, format, schema, path):
+    def get_flat_files(self, filename, schema, format, path):
         source_files_df = self.spark_session.read.format(format) \
             .option("header", True) \
             .schema(schema) \
@@ -13,7 +13,7 @@ class GetSourceElements(SourceElements):
 
         return source_files_df
 
-    def get_db_tables(self, table, schema, server, port, database, username, password):
+    def get_db_tables(self, table, schema, format, server, port, database, username, password):
         ###### method passed with the creation of sql_user in SQL Server ######
         source_tables_df = self.spark_session.read.format("jdbc") \
             .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
