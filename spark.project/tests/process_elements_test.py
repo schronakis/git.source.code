@@ -13,38 +13,46 @@ from pyspark.sql import Row
 from unittest.mock import MagicMock
 from code.source_schemas import mock_df_schema
 
-sc = sparkSession('R&D Spark','2g','2g','4')
-spark_session = sc.generate_spark_session()
-
 class TestProcessElements(unittest.TestCase):
+    
+    def setUp(self):
+        sc = sparkSession('R&D Spark','2g','2g','4')
+        self.spark_session = sc.generate_spark_session()
+
 
     def _data_df(self):
         dataset = [
-            {'Year':2006,
-             'DwellRecType':1,
-             'DwellStatus':2,
-             'Area':77,
-             'Count':159222},
+                {'Year':2006,
+                'DwellRecType':1,
+                'DwellStatus':2,
+                'Area':77,
+                'Count':159222},
 
-             {'Year':2006,
-             'DwellRecType':2,
-             'DwellStatus':11,
-             'Area':1,
-             'Count':405}
+                {'Year':2006,
+                'DwellRecType':2,
+                'DwellStatus':11,
+                'Area':1,
+                'Count':405},
+
+                {'Year':2006,
+                'DwellRecType':2,
+                'DwellStatus':11,
+                'Area':1,
+                'Count':398678}
              ]
         
-        dataset_df = spark_session.createDataFrame([Row(**i) for i in dataset])
+        dataset_df = self.spark_session.createDataFrame([Row(**i) for i in dataset])
 
         return dataset_df
     
     def _output_df(self):
         cols = mock_df_schema.fieldNames()
         output = [
-            [2006, 1, 2, 77, 159222, '2006-159222'],
-            [2006, 2, 11, 1, 405, '2006-405']
+                [2006, 1, 2, 77, 159222, '2006-159222'],
+                [2006, 2, 11, 1, 405, '2006-405']
             ]
         
-        output_df = spark_session.createDataFrame(output).toDF(*cols)
+        output_df = self.spark_session.createDataFrame(output).toDF(*cols)
 
         return output_df
     
