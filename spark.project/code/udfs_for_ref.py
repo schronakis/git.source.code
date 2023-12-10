@@ -7,13 +7,13 @@ from pyspark.sql.functions import pandas_udf, PandasUDFType
 sc = sparkSession('generate_pdf','2g','2g','4')
 spark_session = sc.generate_spark_session()
 
+# Enable Arrow-based columnar data transfers
+spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+
 partition_size = spark_session.conf.get("spark.sql.files.maxPartitionBytes").replace("b","")
 
 print(f"Partition Size: {partition_size} in bytes and {int(partition_size) / 1024 / 1024} in MB")
 print(f"Parallelism : {spark_session.sparkContext.defaultParallelism}")
-
-# Enable Arrow-based columnar data transfers
-spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
 # Define UDFs
 def convertCase(str):
@@ -41,14 +41,14 @@ data = [("1", "john jones"),
         ("2", "tracey smith"),
         ("3", "amy sanders")]
 
-# df = spark_session.createDataFrame(data=data,schema=columns)
+df = spark_session.createDataFrame(data=data,schema=columns)
 
-# df.withColumn("Cureated Name", upperCaseUDF(F.col("Name"))) \
-#   .show(truncate=False)
+df.withColumn("Cureated Name", upperCaseUDF(F.col("Name"))) \
+  .show(truncate=False)
 
-# df.select(F.col("Seqno"), \
-#     convertUDF(F.col("Name")).alias("Name") ) \
-#    .show(truncate=False)
+df.select(F.col("Seqno"), \
+    convertUDF(F.col("Name")).alias("Name") ) \
+   .show(truncate=False)
 
 x = [1, 2, 3]
 
