@@ -1,6 +1,8 @@
 from get_source_elements import GetSourceElements
 from pyspark.sql import functions as F
 from spark_session import sparkSession
+from utils import convertCase, upperCase
+from pyspark.sql.types import StringType, IntegerType, DoubleType, LongType
 from source_schemas import dwell_data_schema, dwell_dim_schema
 
 class ProcessElements:
@@ -27,6 +29,10 @@ class ProcessElements:
              return final_df
 
         def get_joined_df(self):
+             upper_all_chars = F.udf(upperCase, StringType())
+             upper_init_char = F.udf(convertCase, StringType())
+
+
              data_df = self.get_sources_to_df('file', 'Data8278.csv', dwell_data_schema, 'csv')
              rectype_df = self.get_sources_to_df('file', 'DimenLookupDwellRecType8278.csv', dwell_dim_schema, 'csv')
              status_df = self.get_sources_to_df('table', 'stg.DimenLookupDwellStatus8278', dwell_dim_schema)             
@@ -34,11 +40,15 @@ class ProcessElements:
              .join(rectype_df.alias('rectype_df'), F.col('DwellRecType') == F.col('rectype_df.Code'), 'inner') \
              .join(status_df.alias('status_df'), F.col('DwellStatus') == F.col('status_df.Code'), 'inner') \
              .select(('data_df.*'),
-                     F.col('rectype_df.Description').alias('RecTypeDescription'),
-                     F.col('status_df.Description').alias('StatusDescription')) \
+                     upper_init_char(F.col('rectype_df.Description')).alias('RecTypeDescription'),
+                     upper_all_chars(F.col('status_df.Description')).alias('StatusDescription')) \
              .filter((F.col('DwellRecType') == 1) & 
                      (F.col('DwellStatus') == 2) &
                      (F.col('Area') == 77) &
                      (F.col('Count') == 159222)) \
-             .distinct()              
+             .distinct()           
              return concat_df
+
+t = ProcessElements()
+df = t.get_joined_df()
+df.show()

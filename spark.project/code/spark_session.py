@@ -18,6 +18,8 @@ class sparkSession:
                 .config("spark.cores.max", self.cores_max) \
                 .config("spark.sql.adaptive.enabled", True) \
                 .config("spark.sql.adaptive.optimizerEnabled", True) \
+                .config("spark.sql.adaptive.skewJoin.enabled", True) \
+                .config('spark.submit.pyFiles', '/home/schronakis/git.source.code/spark.project/code/utils.zip') \
                 .getOrCreate()
         
         return spark
