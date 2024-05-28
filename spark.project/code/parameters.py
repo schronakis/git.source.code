@@ -19,7 +19,7 @@ connection_info_files = {
     }
 
 connection_info_tables = {
-    'mssql_server':'192.168.1.14', # 172.16.10.64 (office) || 192.168.1.10 (home) || 192.168.1.14 (home/sql_express)
+    'mssql_server':'192.168.1.14', # 192.168.1.10 (home) || 192.168.1.14 (home/sql_express)
     'mssql_port':'1433',
     'mssql_db':'MyWork',
     'mssql_user':'schronakis',
