@@ -19,7 +19,8 @@ class sparkSession:
                 .config("spark.sql.adaptive.enabled", True) \
                 .config("spark.sql.adaptive.optimizerEnabled", True) \
                 .config("spark.sql.adaptive.skewJoin.enabled", True) \
-                .config('spark.submit.pyFiles', '/home/schronakis/git.source.code/spark.project/code/utils.zip') \
+                .config("spark.driver.extraClassPath", "/opt/spark/jars/sqljdbc42.jar") \
+                .config('spark.submit.pyFiles', '/home/schronak/git.source.code/spark.project/code/utils.zip') \
                 .getOrCreate()
         
         return spark

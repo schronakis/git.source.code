@@ -2,12 +2,11 @@ import os
 
 ###################################### env_variables ############################################
 # Set environment variables
-os.environ['source_files_path'] = '/home/schronakis/git.source.code/spark.project/source_files/'
+os.environ['source_files_path'] = '/home/schronak/git.source.code/spark.project/source_files/bank_refined/'
 
 # Get environment variables
 files_path = os.getenv('source_files_path')
-database_url = os.environ.get("DATABASE_IP", "192.168.1.10")
-
+database_url = os.environ.get('mssql_server_ip', '10.249.32.166') # 192.168.1.8:HOME_IP
 #################################################################################################
 
 ###################################### connection_info ##########################################
@@ -15,14 +14,14 @@ connection_info_files = {
     'csv_format':'csv',
     'parquet_format':'parquet',
     'json_format':'json',
-    'source_files_path':'/home/schronakis/git.source.code/spark.project/source_files/'
+    'source_files_path':'/home/schronak/git.source.code/spark.project/source_files/bank_refined/'
     }
 
 connection_info_tables = {
-    'mssql_server':'192.168.1.14', # 192.168.1.10 (home) || 192.168.1.14 (home/sql_express)
+    'mssql_server': database_url, # (work) or (home)
     'mssql_port':'1433',
-    'mssql_db':'MyWork',
+    'mssql_db':'WorkTrain',
     'mssql_user':'schronakis',
-    'mssql_pswd':'#3Chr0nakis'
+    'mssql_pswd':'@2Stavr0s'
     }
 #################################################################################################

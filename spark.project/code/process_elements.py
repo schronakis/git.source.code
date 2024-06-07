@@ -3,7 +3,7 @@ from pyspark.sql import functions as F
 from spark_session import sparkSession
 from utils import convertCase, upperCase
 from pyspark.sql.types import StringType, IntegerType, DoubleType, LongType
-from source_schemas import dwell_data_schema, dwell_dim_schema
+from source_schemas import dwell_data_schema, dwell_dim_schema, init_client_schema, complete_client_schema
 
 class ProcessElements:
         def __init__(self):
@@ -15,40 +15,61 @@ class ProcessElements:
              src_df = self.get_elements.apply(file_type, filename, schema, format)
              
              return src_df  
+        
+        def get_init_clients_df(self):
+              init_clients_df = self.get_sources_to_df('table', 'dbo.client', init_client_schema)
+              init_clients_df = init_clients_df \
+                .withColumn('client_id', F.concat(F.lit('C'), F.lpad(F.col('client_id'),8,'0')))
+              return init_clients_df
+ 
+        def get_complete_clients_df(self):  
+              complete_clients_df = self.get_sources_to_df('file', 'completedclient.csv', complete_client_schema, 'csv')
+              
+              return complete_clients_df             
 
-        def get_concat_data_df(self):
-             data_df = self.get_sources_to_df('file', 'Data8278.csv', dwell_data_schema, 'csv')
+        def get_enriched_clients_df(self):
+              init_client_df = self.get_init_clients_df()
+              complete_client_df = self.get_complete_clients_df()
 
-             final_df = data_df.alias('data_df') \
-             .withColumn('Year_Count', F.concat_ws('-', F.col('Year'),F.col('Count'))) \
-             .filter((F.col('DwellRecType').isin(1,2)) & 
-                     (F.col('DwellStatus').isin(2,11)) &
-                     (F.col('Area').isin(77,1)) &
-                     (F.col('Count').isin(159222,405))) \
-             .distinct() 
-             return final_df
+              upper_all_chars = F.udf(upperCase, StringType())
+              upper_init_char = F.udf(convertCase, StringType())
 
-        def get_joined_df(self):
-             upper_all_chars = F.udf(upperCase, StringType())
-             upper_init_char = F.udf(convertCase, StringType())
+              enriched_clients_df = init_client_df.alias('init_clients') \
+                .join(complete_client_df.alias('complete_clients'), F.col('init_clients.client_id') == F.col('complete_clients.client_id')) \
+                .withColumn('fullname', F.concat_ws(' ', F.col('complete_clients.last'),F.col('complete_clients.first'))) \
+                .select(F.col('complete_clients.client_id'),
+                        upper_all_chars(F.col('fullname')).alias('fullname'),
+                        F.col('complete_clients.fulldate').alias('birthday_date'),
+                        F.col('complete_clients.social').alias('social_number'),
+                        F.col('complete_clients.phone'),
+                        F.col('complete_clients.email'),
+                        F.col('complete_clients.address_1').alias('address'),
+                        F.col('complete_clients.city'),
+                        F.col('complete_clients.zipcode'),
+                        F.col('complete_clients.district_id'))
+              
+              return enriched_clients_df
 
+        #      .filter((F.col('DwellRecType').isin(1,2)) & 
+        #              (F.col('DwellStatus').isin(2,11)) &
+        #              (F.col('Area').isin(77,1)) &
+        #              (F.col('Count').isin(159222,405))) \
+        #      .distinct() 
 
-             data_df = self.get_sources_to_df('file', 'Data8278.csv', dwell_data_schema, 'csv')
-             rectype_df = self.get_sources_to_df('file', 'DimenLookupDwellRecType8278.csv', dwell_dim_schema, 'csv')
-             status_df = self.get_sources_to_df('table', 'stg.DimenLookupDwellStatus8278', dwell_dim_schema)             
-             concat_df = data_df.alias('data_df') \
-             .join(rectype_df.alias('rectype_df'), F.col('DwellRecType') == F.col('rectype_df.Code'), 'inner') \
-             .join(status_df.alias('status_df'), F.col('DwellStatus') == F.col('status_df.Code'), 'inner') \
-             .select(('data_df.*'),
-                     upper_init_char(F.col('rectype_df.Description')).alias('RecTypeDescription'),
-                     upper_all_chars(F.col('status_df.Description')).alias('StatusDescription')) \
-             .filter((F.col('DwellRecType') == 1) & 
-                     (F.col('DwellStatus') == 2) &
-                     (F.col('Area') == 77) &
-                     (F.col('Count') == 159222)) \
-             .distinct()           
-             return concat_df
+        #      data_df = self.get_sources_to_df('file', 'Data8278.csv', dwell_data_schema, 'csv')
+        #      rectype_df = self.get_sources_to_df('file', 'DimenLookupDwellRecType8278.csv', dwell_dim_schema, 'csv')
+        #      status_df = self.get_sources_to_df('table', 'stg.DimenLookupDwellStatus8278', dwell_dim_schema)             
+        #      concat_df = data_df.alias('data_df') \
+        #      .join(rectype_df.alias('rectype_df'), F.col('DwellRecType') == F.col('rectype_df.Code'), 'inner') \
+        #      .join(status_df.alias('status_df'), F.col('DwellStatus') == F.col('status_df.Code'), 'inner') \
+        #      .select(('data_df.*'),
+        #              upper_init_char(F.col('rectype_df.Description')).alias('RecTypeDescription'),
+        #              upper_all_chars(F.col('status_df.Description')).alias('StatusDescription')) \
+        #      .filter((F.col('DwellRecType') == 1) & 
+        #              (F.col('DwellStatus') == 2) &
+        #              (F.col('Area') == 77) &
+        #              (F.col('Count') == 159222))
 
-t = ProcessElements()
-df = t.get_joined_df()
-df.show()
+# t = ProcessElements()
+# df = t.get_enriched_clients_df()
+# df.show()
