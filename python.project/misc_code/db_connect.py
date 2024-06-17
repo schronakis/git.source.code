@@ -15,7 +15,7 @@ class db_connect:
 
         return self.conn.cursor()
 
-my_work = db_connect( 'SQL Server', 'PW0B6TR5\MSSQL_2022', 'WorkTrain', 'yes') #10.249.32.152,1433\MSSQL_2022 ipaddress,port/sql_instance
+my_work = db_connect( 'SQL Server', 'PW0B6TR5\MSSQL_2022', 'TrainingDB', 'yes') #10.249.32.152,1433\MSSQL_2022 ipaddress,port/sql_instance
 
 my_work_cursor = my_work.initiate_connection()
 
