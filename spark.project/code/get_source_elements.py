@@ -25,3 +25,16 @@ class GetSourceElements(SourceElements):
             .load()
         
         return source_tables_df
+    
+    def create_db_tables(self, df, table, server, port, database, username, password, insert_mode):
+        ###### method passed with the creation of sql_user in SQL Server ######
+        create_tables_df = df.write.format("jdbc") \
+            .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
+            .option("url", f"jdbc:sqlserver://{server}:{port};databaseName={database};trustServerCertificate=true") \
+            .option("dbtable", table) \
+            .option("user", username) \
+            .option("password", password) \
+            .mode(insert_mode) \
+            .save()
+        
+        return create_tables_df

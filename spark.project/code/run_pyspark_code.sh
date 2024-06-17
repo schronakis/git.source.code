@@ -4,7 +4,7 @@
 SPARK_HOME=/opt/spark
 
 # Set the PySpark application's main Python script
-PYSPARK_SCRIPT=/home/schronak/git.source.code/spark.project/code/get_source_elements.py
+PYSPARK_SCRIPT=/home/schronak/git.source.code/spark.project/code/init_spark_app.py
 
 # Set other Spark configurations (optional)
 SPARK_CONF="--master local

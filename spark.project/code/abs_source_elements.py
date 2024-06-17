@@ -26,3 +26,7 @@ class SourceElements(ABC):
     @abstractmethod
     def get_db_tables(self):
         pass
+
+    @abstractmethod
+    def create_db_tables(self):
+        pass
