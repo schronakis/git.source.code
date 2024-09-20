@@ -46,7 +46,7 @@ class ProcessElements:
 
               return enriched_clients_df
         
-        def write_df_to_db(self, table_name, mode):
+        def save_df_to_db(self, table_name, mode):
               self.get_elements.create_db_tables(self.get_enriched_clients_df(),
               table_name,
               connection_info_tables.get('mssql_server'),
@@ -77,5 +77,5 @@ class ProcessElements:
         #              (F.col('Count') == 159222))
 
 t = ProcessElements()
-df = t.write_df_to_db('enriched_clients', 'overwrite')
+df = t.save_df_to_db('enriched_clients', 'overwrite')
 # df.show()
