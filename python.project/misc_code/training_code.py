@@ -1,3 +1,6 @@
+import random
+import pandas as pd
+
 ### Write a program to find from string if this string is a "Beautiful String". Return True otherwise False.
 _string = 'xxxttaabbccccaaaabbbeee'
 
@@ -54,3 +57,23 @@ def test(nums):
 
 print(test(list_of_integers))
 ###########################################################################################################################
+
+
+d = {'VENEZUELA':'CARACAS', 'CANADA':'OTTAWA'}
+# country, capital = random.choice(list(d.items()))
+capital = random.choice(list(d.keys()))
+print(capital)
+
+###########################################################################################################################
+
+list1 = [2, 3, 4, 5]
+result_map = list(map(lambda x: pow(x, 2), list1))
+
+df = pd.DataFrame(
+    {"name": ["IBRAHIM", "SEGUN", "YUSUF", "DARE", "BOLA", "SOKUNBI"],
+     "score": [50, 32, 45, 45, 23, 45]})
+df["lower_name"] = df["name"].apply(lambda x: x.lower())
+
+print(result_map)
+
+print(df)
