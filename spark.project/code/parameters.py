@@ -6,7 +6,7 @@ os.environ['source_files_path'] = '/home/schronak/git.source.code/spark.project/
 
 # Get environment variables
 files_path = os.getenv('source_files_path')
-database_url = os.environ.get('mssql_server_ip', '10.249.33.173') # 192.168.1.8:HOME_IP
+database_url = os.environ.get('mssql_server_ip', '10.249.18.152') # 192.168.1.8:HOME_IP
 #################################################################################################
 
 ###################################### connection_info ##########################################
