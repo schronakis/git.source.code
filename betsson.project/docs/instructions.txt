@@ -1,0 +1,13 @@
+Data Engineering Assessment
+
+Task Definition:
+    a. By make use of the invoices.xls data file as your source, create a Datawarehouse model with best practices in place, using Kimball methodology.
+    b. Populate the model created in step a) with the data provided in the excel sheet.
+    c. Analyze any abnormalities (if any) in the data provided and take any action needed(where possible).
+    d. List any assumptions taken into consideration.
+    e. Provide 3 different aggregations one might use for reporting purposes.
+Important Information:
+    • This task may be done either with MSSQL, Python or C#.
+    • It is highly recommended that comments are included, and code is structured well.
+    • If making use of python, you can make use of Jupyter notebooks, thus you can either provide a .PY file or .IPYNB file.
+    • Assumptions & Abnormalities are to be provided in a separate document.
